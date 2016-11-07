@@ -1,8 +1,8 @@
 #### fit meta d prime 
-require(rstan)
+require(rjags)
 require(coda)
-rstan_options(auto_write = TRUE)
-options(mc.cores = parallel::detectCores())
+#rstan_options(auto_write = TRUE)
+#options(mc.cores = parallel::detectCores())
 # function fit = fit_meta_d_mcmc(nR_S1, nR_S2, mcmc_params, fncdf, fninv)
 # % fit = fit_meta_d_mcmc(nR_S1, nR_S2, mcmc_params, s, fncdf, fninv)
 # %
@@ -123,14 +123,25 @@ options(mc.cores = parallel::detectCores())
 # % Transform data and type 1 d' calculations
 #choose simulated data
 #or use different data
-nR_S1<-sim.nR_S1
+nR_S1<-sim.nR_S1 
 nR_S2<-sim.nR_S2
-counts <- c(nR_S1, nR_S2)
-nTot = sum(counts)
-nRatings = length(nR_S1)/2
+count <- c(nR_S1, nR_S2)
+nTot <- sum(count)
+nRating <- length(nR_S1)/2
+forJags <- list(counts=count,nratings=nRating,Tol=0.0001)
+rm(counts)
+#
+mod.1<-jags.model(file="Bayes_metad2.txt",data = forJags,n.chains=4)
+update(mod.1, 1000)
+mod.1.samp<-jags.samples(mod.1,
+             c('meta_d','d1','c1','cS1','cS2'),
+             1000)
+mod.1.samp
+
+
 #fit in STAN
-m_norm<-stan(file="metaDStan.stan",data = list(counts=counts,nratings=nRatings,nTot=nTot),
-             pars = c('meta_d_rS1','meta_d_rS2','d1','c1','cS1','cS2'))
+#m_norm<-stan(file="metaDStan.stan",data = list(counts=counts,nratings=nRatings,nTot=nTot),
+#             pars = c('meta_d_rS1','meta_d_rS2','d1','c1','cS1_raw','cS2_raw'),chains=1)
 
 # %% Data is fit, now package output
 # 
