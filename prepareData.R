@@ -1,9 +1,9 @@
 ##### plan to redo Steve models for estimating meta d prime based on confidence
 # Example Bayesian meta-d fit (single subject)
-rm(list=ls())
+#rm(list=ls())
 source('metaDSim.R')
 
-n_trials <- 1000;
+n_trials <- 120;
 c <- 0;
 c1 <- c(-1.5,-1,-0.5)
 c2 <- c(0.5,1,1.5)

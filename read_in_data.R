@@ -160,7 +160,6 @@ fig[[5]]<-ggplot(aes(y=meanCorr,x=norm3,fill=norm3),data=summary_confidence_cor)
 print(fig[[5]])
 #do players follow social information effect on confidence
 my.data$follow<-my.data$key_resp_direction.corr*my.data$social
-my.data$norm3
 summary_confidence_cor<-
   filter(my.data,norm3!="incong")%>%
   group_by(participant,follow,norm3)%>%
@@ -179,31 +178,5 @@ fig[[6]]<-ggplot(aes(y=meanCorr,x=norm3,fill=norm3),data=summary_confidence_cor)
 print(fig[[6]])
 
 
-##########
-#bin confidence
-#########
-#S1 left S2 right
-bins<-4
-cutpoints<-quantile(my.data$zConf,(0:bins)/bins,na.rm=T)
-binned <-cut(my.data$zConf,cutpoints,include.lowest=TRUE,na.rm=T)
-summary(binned)
-#get S1 and S2 for each participant
-my.data$binned<-binned
-my.data$control_var<-1
-id<-unique(my.data$participants)[1]
-nR_S1<-
-  filter(my.data,(!is.na(zConf)))%>%
-  filter(key_resp_direction.keys=="left")%>%
-  group_by(c_choice,binned,participant)%>%
-  summarise(conf_count=sum(control_var))%>%
-  spread(binned,conf_count)
-nR_S2<-
-  filter(my.data,(!is.na(zConf)))%>%
-  filter(key_resp_direction.keys=="right")%>%
-  group_by(c_choice,binned,participant)%>%
-  summarise(conf_count=sum(control_var))%>%
-  spread(binned,conf_count)
-extract_counts<-function(id){
-  
-}
+
 

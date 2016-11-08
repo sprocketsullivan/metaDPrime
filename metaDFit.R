@@ -123,13 +123,12 @@ require(coda)
 # % Transform data and type 1 d' calculations
 #choose simulated data
 #or use different data
-nR_S1<-sim.nR_S1 
-nR_S2<-sim.nR_S2
+#nR_S1<-sim.nR_S1 
+#nR_S2<-sim.nR_S2
 count <- c(nR_S1, nR_S2)
 nTot <- sum(count)
 nRating <- length(nR_S1)/2
 forJags <- list(counts=count,nratings=nRating,Tol=0.0001)
-rm(counts)
 #
 mod.1<-jags.model(file="Bayes_metad2.txt",data = forJags,n.chains=4)
 update(mod.1, 1000)
