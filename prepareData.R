@@ -3,7 +3,7 @@
 #rm(list=ls())
 source('metaDSim.R')
 
-n_trials <- 120;
+n_trials <- 1000;
 c <- 0;
 c1 <- c(-1.5,-1,-0.5)
 c2 <- c(0.5,1,1.5)
@@ -15,7 +15,7 @@ meta_d <- 1
 
 # Generate data
 sim <- metaDSim(d, meta_d, c, c1, c2, n_trials)
-sim.nR_S1<-sim[[1]]
+sim.nR_1S<-sim[[1]]
 sim.nR_S2<-sim[[2]]
 
 # 

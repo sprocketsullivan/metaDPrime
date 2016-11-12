@@ -35,11 +35,11 @@ fig.d<-list()
 fig.d_meta <-list()
 
 # meta d' for all conditions
-m.meta <- matrix(NA, ncol = 4, nrow = 9)# set up so it corresponds with the number of p.
+m.meta <- matrix(NA, ncol = 4, nrow = length(pID))# set up so it corresponds with the number of p.
 colnames(m.meta)<-c("incon","none","only","same")
 
 # d' for all conditions
-m.d <- matrix(NA, ncol = 4, nrow = 9)
+m.d <- matrix(NA, ncol = 4, nrow = length(pID))
 colnames(m.d)<-c("incon","none","only","same")
 
 #####################################################################x
@@ -47,18 +47,20 @@ colnames(m.d)<-c("incon","none","only","same")
 # SIMPLE ANALYSIS
 
 #### INCON
-run.v <- c(1:length(pID))
-for (iparticipant in run.v){
+i<-0
+for (iparticipant in pID){
+  #iparticipant<-pID[1]
+  i<-i+1
   f.data <- 
     filter(my.data,(!is.na(zConf)))%>%
-    filter(social==0&participant==pID[iparticipant])
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.meta[iparticipant,1] <- mean(as.numeric(model$meta_d))
-  m.d[iparticipant,1] <- mean(as.numeric(model$d1))
+    filter(social==0&participant==iparticipant)
+    model <- 
+      DataMetaD(f.data)%>%
+      print()%>%
+      FitMetaD()
+  m.meta[i,1] <- mean(as.numeric(model$meta_d))
+  m.d[i,1] <- mean(as.numeric(model$d1))
 }
-
-
 #### NONE
 #part.exc <- c()
 run.v <- c(1:length(pID))
@@ -74,7 +76,7 @@ for (iparticipant in run.v){
 
 #### ONLY
 part.exc <- 1# had to exclude 1 due to: RUNTIME ERROR: Failed check for discrete-valued parameters in function
-run.v <- c(1:length(pID))[-part.exc]
+run.v <- c(1:length(pID))#[-part.exc]
 for (iparticipant in run.v){
   f.data <- 
     filter(my.data,(!is.na(zConf)))%>%
@@ -87,7 +89,7 @@ for (iparticipant in run.v){
 
 
 #### SAME
-run.v <- c(1:9) 
+#run.v <- c(1:9) 
 for (iparticipant in run.v){
   f.data <- 
     filter(my.data,(!is.na(zConf)))%>%
