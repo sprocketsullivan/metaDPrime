@@ -115,32 +115,32 @@ m.d$participant<-pID
 
 # PLOT AND PRINT
 #ADD 
-
+selector<-c("25776","36684","36685","45526","62235")
 # Plot Incon
-fig.meta[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(incon)),data=m.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('INCONGUENT')+theme_classic()+ ylim(-1.25, 1.25)
-fig.d[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(incon)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('INCONGRUENT')+theme_classic() + ylim(0, 2.5)
-fig.d_meta[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$incon)),data=m.meta) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('INCONGUENT')+theme_classic()+ ylim(-0.5, 3.5)
+fig.meta[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(incon)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('INCONGUENT')+theme_classic()
+fig.d[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(incon)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('INCONGRUENT')+theme_classic() 
+fig.d_meta[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$incon)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('INCONGUENT')+theme_classic()
 
 
 # Plot None
-fig.meta[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(none)),data=m.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('NONE')+theme_classic()+ ylim(-1.25, 1.25)
-fig.d[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(none)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('NONE')+theme_classic() + ylim(0, 2.5)
-fig.d_meta[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$none)),data=m.meta) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('NONE')+theme_classic()+ ylim(-0.5, 3.5)
+fig.meta[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(none)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('NONE')+theme_classic()
+fig.d[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(none)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('NONE')+theme_classic()
+fig.d_meta[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$none)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('NONE')+theme_classic()
 
 # plot Only
-fig.meta[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(only)),data=m.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('ONLY')+theme_classic()+ ylim(-1.25, 1.25)
-fig.d[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(only)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('ONLY')+theme_classic() + ylim(0, 2.5)
-fig.d_meta[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$only)),data=m.meta) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('ONLY')+theme_classic()+ ylim(-0.5, 3.5)
+fig.meta[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(only)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('ONLY')+theme_classic()
+fig.d[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(only)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('ONLY')+theme_classic() 
+fig.d_meta[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$only)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('ONLY')+theme_classic()
 
 # Plot SAME
-fig.meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=m.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic()+ ylim(-1.25, 1.25)
-fig.d[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic() + ylim(0, 2.5)
-fig.d_meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$same)),data=m.meta) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('SAME')+theme_classic()+ ylim(-0.5, 3.5)
+fig.meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic()
+fig.d[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic() 
+fig.d_meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$same)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('SAME')+theme_classic()
 
 #print(fig.meta[1:4])
 #print(fig.d[1:4])
 #print(fig.d_meta[1:4])
-
+require(gridExtra)
 grid.arrange(fig.meta[[1]],fig.meta[[2]],fig.meta[[3]],fig.meta[[4]], ncol=2, nrow =2)
 grid.arrange(fig.d[[1]],fig.d[[2]],fig.d[[3]],fig.d[[4]], ncol=2, nrow =2)
 grid.arrange(fig.d_meta[[1]],fig.d_meta[[2]],fig.d_meta[[3]],fig.d_meta[[4]], ncol=2, nrow =2)
