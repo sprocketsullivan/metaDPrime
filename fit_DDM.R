@@ -331,3 +331,66 @@ for(i in 1:length(select)){
   
 }
 
+###########################################################################
+# DO SOME PLOTS
+
+# PLOT WEIGHTS
+m.WAIC <- matrix(NA,nrow=9,ncol=5)
+
+for (ipart in 1:9){
+  m.WAIC[ipart,1:5] <-WAIC$weights[[ipart]][1,1:5]
+}
+
+colnames(m.WAIC)<- c("SP","SPDR","SPDB","SPSP","RE")
+
+m.w <- matrix(NA,nrow=9,ncol=5)
+
+for (ipart in 1:9){
+  m.w[ipart,1:5] <-WAIC$weights[[ipart]][2,1:5]
+}
+
+colnames(m.w)<- c("SP","SPDR","SPDB","SPSP","RE")
+
+m.w<-data.frame(m.w)
+m.WAIC<-data.frame(m.WAIC)
+
+m.w$part <- pID
+m.WAIC$part <-pID
+
+m.w.p <- melt(m.w, id.vars="part")
+m.WAIC.p <- melt(m.WAIC, id.vars="part")
+
+p.WAIC = ggplot(aes(x=variable, y=value),data=m.WAIC.p) + geom_bar(stat = "identity") + xlab("model")
+p.w = ggplot(aes(x=variable, y=value),data=m.w.p) + geom_bar(stat = "identity")+ xlab("model")
+
+# do the graph for all participants and save it into a list
+fig.WAIC.p <- group_by(m.WAIC.p,part) %>%
+  do(plots = p.WAIC %+% .)
+
+fig.w.p <- group_by(m.w.p,part) %>%
+  do(plots = p.w %+% . )
+
+grid.arrange(fig.w.p$plots[[1]],fig.w.p$plots[[2]],fig.w.p$plots[[3]],fig.w.p$plots[[4]],fig.w.p$plots[[5]],fig.w.p$plots[[6]],fig.w.p$plots[[7]],fig.w.p$plots[[8]],fig.w.p$plots[[9]], ncol=3, nrow=3)
+
+# PLOT FOR SPSP NUMBERS
+m.SPSP <- matrix(NA,nrow=9,ncol=10)
+colnames(m.SPSP)<-c("a","v","z.NONE.left", "z.SAME.left", "z.ONLY.left", "z.NONE.right", "z.SAME.right", "z.ONLY.right", "sv","t0")
+
+for (ipart in 1:9){
+  m.SPSP[ipart,1:10] <-participant2$SPSP[[ipart]][,1]
+}
+
+m.SPSP<-data.frame(m.SPSP)
+
+m.SPSP$part <- pID
+
+m.SPSP.p <- melt(m.SPSP, id.vars="part")
+
+p.SPSP = ggplot(aes(x=variable, y=value),data=m.WAIC.p) + geom_bar(stat = "identity") + xlab("variable")
+
+# do the graph for all participants and save it into a list
+fig.SPSP.p <- group_by(m.SPSP.p,part) %>%
+  do(plots = p.SPSP %+% .)
+
+grid.arrange(fig.SPSP.p$plots[[1]],fig.SPSP.p$plots[[2]],fig.SPSP.p$plots[[3]],fig.SPSP.p$plots[[4]],fig.SPSP.p$plots[[5]],fig.SPSP.p$plots[[6]],fig.SPSP.p$plots[[7]],fig.SPSP.p$plots[[8]],fig.SPSP.p$plots[[9]], ncol=3, nrow=3)
+
