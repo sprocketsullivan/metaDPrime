@@ -27,79 +27,89 @@ if (!exists("my.data")){
 
 # load participants' IDs
 pID <- unique(my.data$participant)
-  
+
 ##### PRE-ALLOCATION
+# names of columns
+names <-c("incon","none", "only", "same","noneValid", "noneInvalid", "onlyValid","onlyInvalid","sameValid", "sameInvalid")
+
+# meta d'
+m.meta <- matrix(NA, ncol = 10, nrow = length(pID))
+colnames(m.meta)<-names
+
+# d' 
+m.d <- matrix(NA, ncol = 10, nrow = length(pID))
+colnames(m.d)<-names
+
 # graphs
 fig.meta<- list()
 fig.d<-list()
 fig.d_meta <-list()
 fig.p <- list()
+#####################################################################
 
-# meta d' for all conditions
-m.meta <- matrix(NA, ncol = 4, nrow = length(pID))# set up so it corresponds with the number of p.
-colnames(m.meta)<-c("incon","none","only","same")
-
-# d' for all conditions
-m.d <- matrix(NA, ncol = 4, nrow = length(pID))
-colnames(m.d)<-c("incon","none","only","same")
-
-#####################################################################x
-
-# SIMPLE ANALYSIS
-
-#### INCON
-i<-0
-for (iparticipant in pID){
-  #iparticipant<-pID[1]
-  i<-i+1
-  f.data <- 
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social==0&participant==iparticipant)
-    model <- 
-      DataMetaD(f.data)%>%
-      print()%>%
-      FitMetaD()
-  m.meta[i,1] <- mean(as.numeric(model$meta_d))
-  m.d[i,1] <- mean(as.numeric(model$d1))
-}
-
-#### NONE
-#part.exc <- c()
+#### INCONGRUENT trials
 run.v <- c(1:length(pID))
 for (iparticipant in run.v){
   f.data <- 
     filter(my.data,(!is.na(zConf)))%>%
-    filter(social!=0&participant==pID[iparticipant]&norm2=="NONE")
-  model <-DataMetaD(f.data)%>%
+    filter(social==0&participant==pID[iparticipant])
+  model <- 
+    DataMetaD(f.data)%>%
+    print()%>%
     FitMetaD()
-  m.meta[iparticipant,2] <- mean(as.numeric(model$meta_d))
-  m.d[iparticipant,2] <- mean(as.numeric(model$d1))
+  m.meta[iparticipant,1] <- mean(as.numeric(model$meta_d))
+  m.d[iparticipant,1] <- mean(as.numeric(model$d1))
 }
 
-#### ONLY
-#part.exc <- 1# had to exclude 1 due to: RUNTIME ERROR: Failed check for discrete-valued parameters in function
-run.v <- c(1:length(pID))#[-part.exc]
-for (iparticipant in run.v){
-  f.data <- 
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social!=0&participant==pID[iparticipant]&norm2=="ONLY")
-  model <- DataMetaD(f.data)%>%
-    FitMetaD()
-  m.meta[iparticipant,3] <- mean(as.numeric(model$meta_d))
-  m.d[iparticipant,3] <- mean(as.numeric(model$d1))
+#### NORMS
+# does not work if some participants have to be excluded from some (but not all) conditions
+# for that need to add vector that would change everytime 
+
+norm <- c("NONE","ONLY","SAME")
+for (inorm in 1:3){
+  run.v <- c(1:length(pID))
+  for (iparticipant in run.v){
+    f.data <- 
+      filter(my.data,(!is.na(zConf)))%>%
+      filter(social!=0&participant==pID[iparticipant]&norm2==norm[inorm])
+    model <-DataMetaD(f.data)%>%
+      FitMetaD()
+    m.meta[iparticipant,inorm+1] <- mean(as.numeric(model$meta_d))
+    m.d[iparticipant,inorm+1] <- mean(as.numeric(model$d1))
+  }
 }
 
-#### SAME
-#run.v <- c(1:9) 
-for (iparticipant in run.v){
-  f.data <- 
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social!=0 &participant==pID[iparticipant]&norm2=="SAME")
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.meta[iparticipant,4] <- mean(as.numeric(model$meta_d))
-  m.d[iparticipant,4] <- mean(as.numeric(model$d1))
+#### SOCIAL INFO
+# Can be eventually added to the above - once I figure how to encode the social!=0 
+# Some participants unstable - their m.meta changes massively over different runs of the code 
+# (1,8,6)
+
+norm <- c("NONE","ONLY","SAME")
+SI <- c(1,-1)
+
+# type the position of part. to be excluded (if none excluded input number > # participants)
+part.exc<-list(c(1,4,6,9),c(8),c(99),c(6),c(1,4,5),c(99))
+
+i<-1
+for (inorm in 1:length(norm)){
+  for (iSI in 1:length(SI)) {
+    
+    run.v <- c(1:length(pID))[-part.exc[[i]]]
+    
+    for (iparticipant in run.v){
+      f.data <-
+        filter(my.data,(!is.na(zConf)))%>%
+        filter(social==SI[iSI]&participant==pID[iparticipant]&norm2==norm[inorm])
+      model <-DataMetaD(f.data)%>%
+        FitMetaD()
+      m.meta[iparticipant,4+i] <- mean(as.numeric(model$meta_d))
+      m.d[iparticipant,4+i] <- mean(as.numeric(model$d1))
+    }
+    
+    i<- i+1
+  }
 }
+
 
 ###########################################################################xx
 
@@ -117,15 +127,25 @@ m.meta$participant<-pID
 m.d$participant<-pID
 m.diff$participant<-pID
 
+# save the matrices
+save(m.meta,file='m.meta.RData') 
+save(m.d,file='m.d.RData') 
+save(m.diff,file='m.diff.RData') 
+
+
+
+###########################################################################
+
 # PLOT by participant
 
 # change the structure of the d.frame so that I can plot multiple columns
 m.meta.p<-melt(m.meta,id.vars="participant")
+#m.meta.p<-melt(m.meta[c(1:4,11)],id.vars="participant") - use if I dont want to plot social info
 m.d.p <-melt(m.d,id.vars="participant")
 m.diff.p <-melt(m.diff,id.vars="participant")
 
 # define the form of the graph
-p.meta = ggplot(aes(x=variable, y=value),data=m.meta.p) + geom_bar(stat = "identity") + xlab("condition") + ylab("meta-dPrime")
+p.meta = ggplot(aes(x=variable, y=value),data=m.meta.p) + geom_bar(stat = "identity") + xlab("condition") + ylab("meta-d")
 p.d = ggplot(aes(x=variable, y=value),data=m.d.p) + geom_bar(stat = "identity")+ xlab("condition") + ylab("dPrime")
 p.diff = ggplot(aes(x=variable, y=value),data=m.diff.p) + geom_bar(stat = "identity")+ xlab("condition") + ylab("metaD-dPrime")
 
@@ -139,6 +159,7 @@ fig.d.p <- group_by(m.d.p,participant) %>%
 fig.diff.p <- group_by(m.diff.p,participant) %>%
   do(plots = p.diff %+% .)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 # PLOT AND PRINT
 #ADD 
@@ -248,87 +269,11 @@ for (iparticipant in run.v){
     FitMetaD()
   m.advanced.meta[iparticipant,3] <- mean(as.numeric(model$meta_d))
   m.advanced.d[iparticipant,3] <- mean(as.numeric(model$d1))
-}
-# ONLY with invalid social info
-run.v <- c(2:length(pID)) # see above
-for (iparticipant in run.v){
-  f.data <-
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social==-1 &participant==pID[iparticipant]&norm2=="ONLY")
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.advanced.meta[iparticipant,4] <- mean(as.numeric(model$meta_d))
-  m.advanced.d[iparticipant,4] <- mean(as.numeric(model$d1))
+=======
+# Put meta and dPrime together 
+for(i in 1:length(pID)){
+  fig.p[[i]]<- grid.arrange(fig.meta.p$plots[[i]],fig.d.p$plots[[i]], fig.diff.p$plots[[i]],ncol=1, nrow =3, top=as.character(pID[i]))
+>>>>>>> 47cde91e24fa040c2c4078d9f45afcefb566481c
 }
 
-# same with valid social info
-part.exc <- c(7,8)# had to exclude 1 due to: RUNTIME ERROR: Failed check for discrete-valued parameters in function
-run.v <- c(1:length(pID))[-part.exc]
-for (iparticipant in run.v){
-  f.data <-
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social==1 &participant==pID[iparticipant]&norm2=="SAME")
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.advanced.meta[iparticipant,5] <- mean(as.numeric(model$meta_d))
-  m.advanced.d[iparticipant,5] <- mean(as.numeric(model$d1))
-}
-
-# same with invalid social info
-run.v <- c(1:length(pID))
-for (iparticipant in run.v){
-  f.data <-
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social==-1&participant==pID[iparticipant]&norm2=="SAME")
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.advanced.meta[iparticipant,6] <- mean(as.numeric(model$meta_d))
-  m.advanced.d[iparticipant,6] <- mean(as.numeric(model$d1))
-}
-
-#### PREPARE FOR PLOTTING
-
-#convert matrices into data.frames (for ggplot, and easier handling)
-m.advanced.meta <- data.frame(m.advanced.meta)
-m.advanced.d <- data.frame(m.advanced.d)
-
-# add a column in m.meta for the difference between d' and meta-d' (metacognitive efficiency)
-m.advanced.meta$diff <- m.advanced.d-m.advanced.meta
-
-# add a column with participant info
-m.advanced.meta$participant<-pID
-m.advanced.d$participant<-pID
-
-# PLOT META INVALID, VALID
-fig.meta.a[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(noneInvalid)),data=m.advanced.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('NONE-Inalid')+theme_classic() + ylim(-1.5, 1.5)
-fig.meta.a[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(noneValid)),data=m.advanced.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('NONE-valid')+theme_classic()+ ylim(-1.5, 1.5)
-grid.arrange(fig.meta.a[[1]],fig.meta.a[[2]], ncol=1, nrow =2)
-
-fig.meta.a[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(onlyInvalid)),data=m.advanced.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('ONLY-Invalid')+theme_classic()+ ylim(-1.5, 1.5)
-fig.meta.a[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(onlyValid)),data=m.advanced.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('ONLY-Valid')+theme_classic()+ ylim(-1.5, 1.5)
-grid.arrange(fig.meta.a[[3]],fig.meta.a[[4]], ncol=1, nrow =2)
-
-fig.meta.a[[5]]<-ggplot(aes(x=factor(participant),y=as.numeric(sameInvalid)),data=m.advanced.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('SAME-Invalid')+theme_classic()+ ylim(-1.5, 1.5)
-fig.meta.a[[6]]<-ggplot(aes(x=factor(participant),y=as.numeric(sameValid)),data=m.advanced.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('SAME-Valid')+theme_classic()+ ylim(-1.5, 1.5)
-grid.arrange(fig.meta.a[[5]],fig.meta.a[[6]], ncol=1, nrow =2)
-
-
-grid.arrange(fig.meta.a[[1]],fig.meta.a[[3]],fig.meta.a[[5]],fig.meta.a[[2]],fig.meta.a[[4]],fig.meta.a[[6]], ncol=3, nrow =2)
-
-# PLOT D INVALID, VALID
-fig.d.a[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(noneInvalid)),data=m.advanced.d) + geom_bar(stat = "identity") + ylab("dPrime") + xlab("participant") + ggtitle('NONE-Invalid')+theme_classic() + ylim(-1.5, 2.5)
-fig.d.a[[2]]<-ggplot(aes(x=factor(participant),y=as.numeric(noneValid)),data=m.advanced.d) + geom_bar(stat = "identity") + ylab("dPrime") + xlab("participant") + ggtitle('NONE-Valid')+theme_classic()+ ylim(-1.5, 2.5)
-grid.arrange(fig.d.a[[1]],fig.d.a[[2]], ncol=1, nrow =2)
-
-fig.d.a[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(onlyInvalid)),data=m.advanced.d) + geom_bar(stat = "identity") + ylab("dPrime") + xlab("participant") + ggtitle('ONLY-Invalid')+theme_classic()+ ylim(-1.5, 2.5)
-fig.d.a[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(onlyValid)),data=m.advanced.d) + geom_bar(stat = "identity") + ylab("dPrime") + xlab("participant") + ggtitle('ONLY-Valid')+theme_classic()+ ylim(-1.6, 2.5)
-grid.arrange(fig.d.a[[3]],fig.d.a[[4]], ncol=1, nrow =2)
-
-fig.d.a[[5]]<-ggplot(aes(x=factor(participant),y=as.numeric(sameInvalid)),data=m.advanced.d) + geom_bar(stat = "identity") + ylab("dPrime") + xlab("participant") + ggtitle('SAME-Invalid')+theme_classic()+ ylim(-1.5, 2.5)
-fig.d.a[[6]]<-ggplot(aes(x=factor(participant),y=as.numeric(sameValid)),data=m.advanced.d) + geom_bar(stat = "identity") + ylab("dPrime") + xlab("participant") + ggtitle('SAME-Valid')+theme_classic()+ ylim(-1.5, 2.5)
-grid.arrange(fig.d.a[[5]],fig.d.a[[6]], ncol=1, nrow =2)
-
-
-grid.arrange(fig.d.a[[1]],fig.d.a[[3]],fig.d.a[[5]],fig.d.a[[2]],fig.meta.a[[4]],fig.d.a[[6]], ncol=3, nrow =2)
-
-
+grid.arrange(fig.p[[1]],fig.p[[2]],fig.p[[3]],fig.p[[4]],fig.p[[5]],fig.p[[6]],fig.p[[7]],fig.p[[8]],fig.p[[9]], ncol=3, nrow=3)

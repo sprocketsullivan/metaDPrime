@@ -24,7 +24,11 @@ colorScheme<-c("#F5A503","#56D9CD", "#3AA1BF") #yellow, l.blue, d.blue
 # participants to exclude
 part.excl <- c(7:8,12)
 #excludes pp45524,45525 (always 0 wager),62236(low accuracy - chance level), also suggested to exclude 25774 (tended to have low wager) 
+part.excl <- c(1,6:8,10,12:13)
 
+#excludes: 
+  # confidence not varied enough - 25774, 36686, 45524,45525, 62234,62236,65334
+ 
 
 # Define pathways
 
