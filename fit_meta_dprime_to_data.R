@@ -3,7 +3,7 @@
 ################################################################
 
 # clear the workspace
-rm(list=ls())
+#rm(list=ls())
 
 ################################################################
 
@@ -46,6 +46,14 @@ fig.d<-list()
 fig.d_meta <-list()
 fig.p <- list()
 #####################################################################
+#bin data
+my.data<-
+  filter(my.data,(!is.na(my.data$zConf)))
+my.data$binned<-0
+for(i in pID){
+  my.data$binned[my.data$participant==i]<-bin_function(my.data[my.data$participant==i,])
+}
+my.data$binned<-factor(my.data$binned)
 
 #### INCONGRUENT trials
 run.v <- c(1:length(pID))
@@ -88,13 +96,14 @@ norm <- c("NONE","ONLY","SAME")
 SI <- c(1,-1)
 
 # type the position of part. to be excluded (if none excluded input number > # participants)
-part.exc<-list(c(1,4,6,9),c(8),c(99),c(6),c(1,4,5),c(99))
+#part.exc <- 
+#part.exc<-list(c(1,4,6,9),c(8),c(99),c(6),c(1,4,5),c(99))
 
 i<-1
 for (inorm in 1:length(norm)){
   for (iSI in 1:length(SI)) {
     
-    run.v <- c(1:length(pID))[-part.exc[[i]]]
+    run.v <- c(1:length(pID))#[-part.exc[[i]]]
     
     for (iparticipant in run.v){
       f.data <-
@@ -159,8 +168,6 @@ fig.d.p <- group_by(m.d.p,participant) %>%
 fig.diff.p <- group_by(m.diff.p,participant) %>%
   do(plots = p.diff %+% .)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 # PLOT AND PRINT
 #ADD 
 selector<-c("25776","36684","36685","45526","62235")
@@ -184,7 +191,7 @@ fig.d_meta[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$only)),data=
 fig.meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic()
 fig.d[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic() 
 fig.d_meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(diff$same)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('SAME')+theme_classic()
-=======
+
 # Put meta and dPrime together (needs a nice code I think)
 for(i in 1:length(pID)){
   fig.p[[i]]<- grid.arrange(fig.meta.p$plots[[i]],fig.d.p$plots[[i]], fig.diff.p$plots[[i]],ncol=1, nrow =3, top=as.character(pID[i]))
@@ -211,7 +218,7 @@ fig.d_meta[[3]]<-ggplot(aes(x=factor(participant),y=as.numeric(only)),data=m.dif
 fig.meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=m.meta) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic()+ ylim(-1.25, 1.25)
 fig.d[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('SAME')+theme_classic() + ylim(0, 2.5)
 fig.d_meta[[4]]<-ggplot(aes(x=factor(participant),y=as.numeric(same)),data=m.diff) + geom_bar(stat = "identity")  + ylab("dPrime-metad") + xlab("participant") + ggtitle('SAME')+theme_classic()+ ylim(-0.5, 3.5)
->>>>>>> 2af9c01f7cb22eb2bec34c668733b72943661104
+
 
 #print(fig.meta[1:4])
 #print(fig.d[1:4])
@@ -269,11 +276,9 @@ for (iparticipant in run.v){
     FitMetaD()
   m.advanced.meta[iparticipant,3] <- mean(as.numeric(model$meta_d))
   m.advanced.d[iparticipant,3] <- mean(as.numeric(model$d1))
-=======
 # Put meta and dPrime together 
 for(i in 1:length(pID)){
   fig.p[[i]]<- grid.arrange(fig.meta.p$plots[[i]],fig.d.p$plots[[i]], fig.diff.p$plots[[i]],ncol=1, nrow =3, top=as.character(pID[i]))
->>>>>>> 47cde91e24fa040c2c4078d9f45afcefb566481c
 }
 
 grid.arrange(fig.p[[1]],fig.p[[2]],fig.p[[3]],fig.p[[4]],fig.p[[5]],fig.p[[6]],fig.p[[7]],fig.p[[8]],fig.p[[9]], ncol=3, nrow=3)

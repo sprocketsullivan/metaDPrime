@@ -1,7 +1,6 @@
 #########
 # meta D prime functions
-
-DataMetaD<- function (filtered.data, nBins=3) {
+bin_function <- function(filtered.data,nBins=3){
   #bins confidence ratings into bins
   cutpoints <-as.numeric(quantile(filtered.data$zConf,(0:nBins)/nBins,na.rm=T))
   if(length(unique(cutpoints))!=length(cutpoints))
@@ -13,8 +12,10 @@ DataMetaD<- function (filtered.data, nBins=3) {
   #cutpoints <-cutpoints + seq_along(cutpoints) * .Machine$double.eps # in case that two cutpoints are the same - introduce jitter to separate them
   filtered.data$binned <-cut(filtered.data$zConf,cutpoints,include.lowest=TRUE,na.rm=T) #na.rm=T - exclude mising values from the analysis - are we expecting any after all the filtering?
   #filtered.data$binned <-.bincode(filtered.data$zConf,cutpoints,include.lowest=TRUE)
+  return(factor(filtered.data$binned))
+}
+DataMetaD<- function (filtered.data, nBins=3) {
   filtered.data$control_var<-1
-  #filtered.data<-filtered.data[-is.na(filtered.data$binned),]
   # Calculates nR_S1, nR_S2
   nR_S1<-
     filter(filtered.data,key_resp_direction.keys=="left")%>%
