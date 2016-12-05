@@ -167,10 +167,14 @@ fig.d.p <- group_by(m.d.p,participant) %>%
 
 fig.diff.p <- group_by(m.diff.p,participant) %>%
   do(plots = p.diff %+% .)
+########################
+m.meta<-filter(m.meta,participant%in%selector)
+m.meta<-filter(m.meta,participant%in%selector)
+
 
 # PLOT AND PRINT
 #ADD 
-selector<-c("25776","36684","36685","45526","62235")
+selector<-c("25776","36684","36685","45526","62235","22154","22155","22156")
 # Plot Incon
 fig.meta[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(incon)),data=subset(m.meta,pID%in%selector)) + geom_bar(stat = "identity") + ylab("meta-dPrime") + xlab("participant") + ggtitle('INCONGUENT')+theme_classic()
 fig.d[[1]]<-ggplot(aes(x=factor(participant),y=as.numeric(incon)),data=m.d) + geom_bar(stat = "identity")  + ylab("dPrime") + xlab("participant") + ggtitle('INCONGRUENT')+theme_classic() 
@@ -230,55 +234,3 @@ grid.arrange(fig.d_meta[[1]],fig.d_meta[[2]],fig.d_meta[[3]],fig.d_meta[[4]], nc
 
 ##########################################################################################x
 
-# Differences between social info in a norm
-
-#pre-allocation
-fig.meta.a<-list()
-fig.d.a<-list()
-fig.m_d.a <-list()
-
-m.advanced.meta <- matrix(NA, ncol = 6, nrow = 9)
-colnames(m.advanced.meta)<-c("noneValid","noneInvalid","onlyValid","onlyInvalid","sameValid","sameInvalid")
-
-m.advanced.d <- matrix(NA, ncol = 6, nrow = 9)
-colnames(m.advanced.d)<-c("noneValid","noneInvalid","onlyValid","onlyInvalid","sameValid","sameInvalid")
-
-# none with Valid social info
-run.v <- c(1:length(pID))
-for (iparticipant in run.v){
-  f.data <-
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social==1&participant==pID[iparticipant]&norm2=="NONE")
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.advanced.meta[iparticipant,1] <- mean(as.numeric(model$meta_d))
-  m.advanced.d[iparticipant,1] <- mean(as.numeric(model$d1))
-}
-# none with invalid social info
-run.v <- c(1:length(pID))
-for (iparticipant in run.v){
-  f.data <-
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social==-1 &participant==pID[iparticipant]&norm2=="NONE")
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.advanced.meta[iparticipant,2] <- mean(as.numeric(model$meta_d))
-  m.advanced.d[iparticipant,2] <- mean(as.numeric(model$d1))
-}
-
-# ONLY with Valid social info
-run.v <- c(2:length(pID)) #HAD TO EXCLUDE P.1 -> jags.model - COMPILATION ERROR on line 83(invalid range)
-for (iparticipant in run.v){
-  f.data <-
-    filter(my.data,(!is.na(zConf)))%>%
-    filter(social==1 &participant==pID[iparticipant]&norm2=="ONLY")
-  model <-DataMetaD(f.data)%>%
-    FitMetaD()
-  m.advanced.meta[iparticipant,3] <- mean(as.numeric(model$meta_d))
-  m.advanced.d[iparticipant,3] <- mean(as.numeric(model$d1))
-# Put meta and dPrime together 
-for(i in 1:length(pID)){
-  fig.p[[i]]<- grid.arrange(fig.meta.p$plots[[i]],fig.d.p$plots[[i]], fig.diff.p$plots[[i]],ncol=1, nrow =3, top=as.character(pID[i]))
-}
-
-grid.arrange(fig.p[[1]],fig.p[[2]],fig.p[[3]],fig.p[[4]],fig.p[[5]],fig.p[[6]],fig.p[[7]],fig.p[[8]],fig.p[[9]], ncol=3, nrow=3)
