@@ -11,7 +11,7 @@
 #############################################################################x
 # clear the workspace
 rm(list=ls())
-
+setwd("D:/UlfT/Experimente/Human_experiments/Confidence/metaDPrime/")
 # Import Packages
 library(tidyverse) 
 library(stringr)
@@ -22,10 +22,10 @@ library(dtplyr)
 colorScheme<-c("#F5A503","#56D9CD", "#3AA1BF") #yellow, l.blue, d.blue
 
 # participants to exclude
-part.excl <- c(7:8,12)
+#part.excl <- c(7:8,12)
 #excludes pp45524,45525 (always 0 wager),62236(low accuracy - chance level), also suggested to exclude 25774 (tended to have low wager) 
-part.excl <- c(1,6:8,10,12:13)
-
+#part.excl <- c(1,6:8,10,12:13)
+part.excl<-NULL
 #excludes: 
   # confidence not varied enough - 25774, 36686, 45524,45525, 62234,62236,65334
  
@@ -47,7 +47,7 @@ fig<- list() #container for figures
 
 # Extract data from Phase2 from all participants and save them into a single file: my.data
 setwd('.//data')
-files<-list.files(pattern='*Phase2.csv')[-part.excl] 
+files<-list.files(pattern='*Phase2.csv')#[-part.excl] 
 my.data<-rbindlist(lapply(files, fread),use.names=TRUE,fill=TRUE) 
 setwd('..\\')
 
@@ -66,8 +66,14 @@ my.data<-my.data[!is.na(my.data$key_resp_direction.rt)] #this leaves unequal num
 # Calculate the number or participants
 no.part<-length(unique(my.data$participant))
 
+#confidence ratings different for players 22154,22155,22156
+conf.spec<-c("22154","22155","22156")
+conf.trans<-(as.numeric(my.data$PDW.response[my.data$participant%in%conf.spec]))
+my.data$conf<-my.data$PDW.response
+my.data$conf[my.data$participant%in%conf.spec]<-(ifelse(conf.trans<=0.5,0.5-conf.trans,conf.trans-0.5))
 # Normalize confidence ratings and put them into a new column
-my.data[,zConf:=scale(as.numeric(PDW.response,na.rm=T)),by=participant]
+my.data[,zConf:=scale(as.numeric(conf,na.rm=T)),by=participant]
+hist(my.data$zConf)
 
 # Add a column that states if social info was presented
 my.data$si<-factor(ifelse(my.data$social==0,0,1),labels=c("no social\ninfo","social\ninfo"))
@@ -114,7 +120,6 @@ my.data$rt.log.z<-my.data$rt.log-my.data$meanRT
 ### correct answers overall ###
 
 #calculate some more variables
-
 summary_corr_choices<-
   group_by(my.data,participant,si,norm2)%>%
   summarise(mean_corr_l=mean(key_resp_direction.corr*100),N=length(key_resp_direction.corr))%>%
@@ -245,7 +250,6 @@ fig[[5]]<-ggplot(aes(y=meanCorr,x=norm3,fill=norm3),data=summary_confidence_cor)
 print(fig[[5]])
 #do players follow social information effect on confidence
 my.data$follow<-my.data$key_resp_direction.corr*my.data$social
-my.data$norm3
 summary_confidence_cor<-
   filter(my.data,norm3!="incong")%>%
   group_by(participant,follow,norm3)%>%
@@ -262,4 +266,4 @@ fig[[6]]<-ggplot(aes(y=meanCorr,x=norm3,fill=norm3),data=summary_confidence_cor)
   scale_fill_manual(values=c(colorScheme,"grey"))+
   guides(fill = guide_legend(keywidth = 1.2, keyheight = 1.2))+facet_wrap(~follow)
 print(fig[[6]])
-
+ 

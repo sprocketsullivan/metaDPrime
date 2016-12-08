@@ -1,22 +1,16 @@
-##################  DMC Lesson 3: Sampling
-
-### Lesson 3.3:  Sampling and assessing a single LBA subject
-
-#rm(list=ls()) 
-setwd("C:/Users/toelch/Dropbox/DMC_Europe_2016-update/")
+rlba()
+#setwd("C:/Users/toelch/Dropbox/DMC_Europe_2016-update/")
+setwd("C:/Users/ulf/Dropbox/DMC_Europe_2016-update/")
 # Current working directory must be set to the top-level folder  
 # containing the dmc and tutorial subfolders 
 source ("tutorial/file_utils.R")
 load_model ("lba_B.R")
 
 #S#R#RT
-
-
-
-
 #create data
-help.data<-subset(my.data,participant==unique(my.data$participant)[2])
+help.data<-subset(my.data,participant==unique(my.data$participant)[5])
 help.data<-subset(help.data,norm3=="incong")
+
 S<-ifelse(help.data$correct=="left","s1","s2")
 R<-ifelse(help.data$key_resp_direction.keys=="left","r1","r2")
 RT<-help.data$key_resp_direction.rt
@@ -55,12 +49,6 @@ p.prior <- prior.p.dmc(
   p1=c(A=.3,B=.3,mean_v.true=1,mean_v.false=0,t0=1),                           
   p2=c(1,1,3,3,1),lower=c(0,0,NA,NA,.1),upper=c(NA,NA,NA,NA,1)
 )
-# p.prior <- prior.p.dmc(
-#   dists = c("tnorm","tnorm","tnorm","beta"),
-#   p1=c(A=.3,mean_v.true=1,mean_v.false=0,t0=1),                           
-#   p2=c(1,3,3,1),lower=c(0,NA,NA,.1),upper=c(NA,NA,NA,1)
-# )
-
 
 par(mfcol=c(2,3)); for (i in names(p.prior)) plot.prior(i,p.prior)
 
@@ -70,6 +58,7 @@ par(mfcol=c(2,3)); for (i in names(p.prior)) plot.prior(i,p.prior)
 # burnin run than for LNR.
 samples <- samples.dmc(nmc=400,p.prior,data.model)
 samples <- run.dmc(samples, report = 25, cores=4,p.migrate=.05)
+
 plot.dmc(samples,layout=c(3,4))
 plot.dmc(samples,layout=c(3,4),start=300,smooth=FALSE)
 
