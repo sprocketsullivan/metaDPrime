@@ -17,6 +17,7 @@ library(dtplyr)
 library(gridExtra)
 
 # Load functions
+setwd("D:/UlfT/Experimente/Human_experiments/Confidence/metaDPrime/")
 source('meta_dprime_functions.R')
 
 # # Load my.data (if it is not already present)
@@ -84,4 +85,13 @@ for (inorm in 1:3){
 }
 
 ###########################################################################xx
+#convert matrices into data.frames (for ggplot, and easier handling)
+m.meta <- data.frame(m.meta)
+m.d <- data.frame(m.d)
+m.meta$participant<-pID
+m.d$participant<-pID
+prime.res<-melt(m.meta,id.vars="participant")
+prime.res$d_prime<-melt(m.d,id.vars="participant")$value
+names(prime.res)<-c("participant","norm","meta_d_prime","d_prime")
+prime.res$prime_diff<-prime.res$d_prime-prime.res$meta_d_prime
 

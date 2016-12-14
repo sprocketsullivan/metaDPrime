@@ -7,7 +7,7 @@ source ("tutorial/file_utils.R")
 load_model ("lba_B.R")
 #prepare data
 help.data<-subset(my.data,participant==unique(my.data$participant)[5])
-help.data<-subset(help.data,norm2=="NONE")
+help.data<-subset(help.data,norm3!="ONLY"&norm3!="SAME")
 S<-ifelse(help.data$correct=="left","s1","s2")
 SI<-ifelse(help.data$social==0,"none",
            ifelse(help.data$social3=="valid",paste(help.data$correct,"SI",sep="_"),
@@ -49,10 +49,10 @@ samples <- run.dmc(samples, report = 25, cores=4,p.migrate=.05)
 plot.dmc(samples,layout=c(3,4))
 
 summary.dmc(samples)
+samples2 <- run.dmc(samples.dmc(nmc=1000,samples=samples), 
+                    cores=4,report=25)
+plot.dmc(samples2,layout=c(3,4),smooth=FALSE)
+summary.dmc(samples)
 
 
-
-
-p.vector  <- c(A=.25,B=.5,mean_v.true=1,mean_v.false=.25,t0=.2)
-data.model <- data.model.dmc(simulate.dmc(p.vector,model,n=1e4),model)
 
