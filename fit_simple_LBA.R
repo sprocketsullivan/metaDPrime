@@ -1,4 +1,4 @@
-rlba()
+
 #setwd("C:/Users/toelch/Dropbox/DMC_Europe_2016-update/")
 setwd("C:/Users/ulf/Dropbox/DMC_Europe_2016-update/")
 # Current working directory must be set to the top-level folder  
